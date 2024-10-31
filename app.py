@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from resume_parser import parse_pdf, extract_keywords
+from resume_parser import parse_pdf
 
 app = Flask(__name__)
 
@@ -15,11 +15,14 @@ def upload_file():
     if file.filename == '':
         return "No selected file"
     if file:
-        # Save the file and parse it
-        file.save(file.filename)
-        text = parse_pdf(file.filename)
-        keywords = extract_keywords(text)
-        return f"Extracted Keywords: {keywords}"
+        # Save the uploaded file
+        file_path = f"uploads/{file.filename}"
+        file.save(file_path)
+    
+    file_text = parse_pdf(file_path)
+        #return notice that file uploaded
+    return f"<h2>Content: {file_text} </h2>"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
