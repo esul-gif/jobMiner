@@ -1,31 +1,50 @@
-from careerjet_api_client import CareerjetAPIClient
+import requests
+from resume_parser import parse_pdf
 
-def test_careerjet_api():
-    # Initialize the Careerjet API client
-    cj = CareerjetAPIClient("en_US")  # Use appropriate locale (e.g., "en_US" for United States)
+keywords = parse_pdf("uploads/ES.Resume.pdf")
 
-    # Define the search parameters
-    search_params = {
-        'keywords': 'Software Developer',
-        'location': 'Remote',
-        'page': 1,
-    }
+def search_jobs(keywords):
+    app_key = "65f3396f4b93531083b8bdf53f203870"
+    app_id = "3e7ce06b"
+    country = "us"
 
-    # Perform the search
-    result = cj.search(search_params)
+    url = f'https://api.adzuna.com/v1/api/jobs/{country}/search/1'
 
-    # Check if any jobs were returned and print a few details
-    if result['hits'] > 0:
-        print("Job listings found:")
-        for job in result['jobs'][:5]:  # Print first 5 job results
-            print(f"Title: {job['title']}")
-            print(f"Company: {job['company']}")
-            print(f"Location: {job['locations']}")
-            print(f"URL: {job['url']}")
-            print("------")
+    # Split keywords into manageable chunks
+    keyword_chunks = [keywords[i:i + 1] for i in range(0, len(keywords), 1)]
+
+    all_results = []
+    
+    for chunk in keyword_chunks:
+        keyword_query = " OR ".join(chunk)
+        print("Querying with keyword chunk: ", keyword_query)
+        
+        params = {
+            'app_id': app_id,
+            'app_key': app_key,
+            'what': keyword_query,
+            'where': 'New York'
+        }
+
+        # Send the request for each keyword chunk
+        response = requests.get(url, params=params)
+        
+        if response.status_code == 200:
+            job_data = response.json()
+            all_results.extend(job_data.get('results', []))  # Add results to the list if found
+        else:
+            print(f"Error with chunk '{keyword_query}':", response.status_code, response.text)
+
+    # Check if any results were found across all queries
+    if all_results:
+        for job in all_results:
+            title = job.get('title', 'No title available')
+            description = job.get('description', 'No description available')
+            job_url = job.get('redirect_url', 'No link available')
+            print(f"Job Title: {title}")
+            print(f"Job Description: {description}")
+            print(f"Job Link: {job_url}\n")
     else:
-        print("No job listings found.")
+        print("No results found for the given keywords.")
 
-# Run the test function
-if __name__ == "__main__":
-    test_careerjet_api()
+search_jobs(keywords)

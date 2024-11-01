@@ -2,3 +2,4 @@ flask
 pdfminer.six
 nltk
 affinda
+requests

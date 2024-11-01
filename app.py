@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from resume_parser import parse_pdf
+from job_searcher import search_jobs
 
 app = Flask(__name__)
 
@@ -21,10 +22,10 @@ def upload_file():
     
     file_text = parse_pdf(file_path)
         #return notice that file uploaded
-    return f"<h2>Content: {file_text} </h2>"
+    return f"<h2>parsed: {file_text} </h2>"
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)  # Listen on all interfaces, not just localhost
+    app.run(host="0.0.0.0", port=5000, debug=True)  # Listen on all interfaces, not just localhost
 
 
