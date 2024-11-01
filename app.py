@@ -19,7 +19,7 @@ def upload_file():
         file_path = f"uploads/{file.filename}"
         file.save(file_path)
     
-    file_text = parse_pdf(file_path)
+    file_text = parse_pdf(file_path) #change to extracted?
         #return notice that file uploaded
     return f"<h2>Content: {file_text} </h2>"
 
