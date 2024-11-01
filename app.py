@@ -2,6 +2,33 @@ from flask import Flask, request, render_template
 from resume_parser import parse_pdf
 from job_searcher import search_jobs
 
+import sqlite3
+
+def init_db():
+    conn = sqlite3.connect("keywords.db")
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Keywords (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            keywords TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+def save_keywords_to_db(keywords):
+    # Join the list into a single string with commas separating each keyword
+    keywords_str = ", ".join(keywords)  # Convert list to string
+    conn = sqlite3.connect("keywords.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO Keywords (keywords) VALUES (?)", (keywords_str,))
+    conn.commit()
+    conn.close()
+
+
+
+init_db()
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -22,6 +49,7 @@ def upload_file():
     
     file_text = parse_pdf(file_path)
         #return notice that file uploaded
+    save_keywords_to_db(file_text)
     return f"<h2>parsed: {file_text} </h2>"
 
 

@@ -2,6 +2,7 @@
 
 from pdfminer.high_level import extract_text
 from affinda import AffindaAPI, TokenCredential
+import os
 
 def parse_pdf(file_path):
     #connect to api
@@ -22,4 +23,3 @@ def parse_pdf(file_path):
     keywords = [skill["name"] for skill in skills]  # Extracts only skill names
     job_titles = [exp["job_title"] for exp in experiences if "job_title" in exp]
     return(keywords + job_titles)  # Combine skills and job titles as keywords
-

@@ -1,7 +1,5 @@
 import requests
-from resume_parser import parse_pdf
-
-keywords = parse_pdf("uploads/ES.Resume.pdf")
+import os
 
 def search_jobs(keywords):
     app_key = "65f3396f4b93531083b8bdf53f203870"
@@ -46,5 +44,3 @@ def search_jobs(keywords):
             print(f"Job Link: {job_url}\n")
     else:
         print("No results found for the given keywords.")
-
-search_jobs(keywords)
